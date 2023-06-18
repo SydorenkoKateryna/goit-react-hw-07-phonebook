@@ -1,8 +1,21 @@
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchContacts } from 'store/operations';
+import { selectContacts, selectIsLoading, selectError } from 'store/selectors';
 
 const App = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
   return (
     <div
       style={{
@@ -25,9 +38,15 @@ const App = () => {
       <h1>Phonebook</h1>
       <ContactForm />
 
-      <h2>Contacts</h2>
-      <Filter />
-      <ContactList />
+      {isLoading && !error && <b>Loading...</b>}
+
+      {!isLoading && !error && (
+        <>
+          <h2>Contacts</h2>
+          <Filter />
+          {contacts.length > 0 && <ContactList />}
+        </>
+      )}
     </div>
   );
 };

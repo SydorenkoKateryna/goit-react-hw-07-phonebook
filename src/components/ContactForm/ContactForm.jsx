@@ -1,23 +1,23 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getContacts } from 'store/selectors';
-import { createContact } from 'store/contactsSlice';
+import { selectContacts } from 'store/selectors';
+import { addContact } from 'store/operations';
 import { Label, Input, Button } from './ContactForm.styled';
 
 const ContactForm = () => {
   const dispatch = useDispatch();
-  const { contactList } = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
 
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
 
   const handleChange = ({ target: { name, value } }) => {
     switch (name) {
       case 'name':
         setName(value);
         break;
-      case 'number':
-        setNumber(value);
+      case 'phone':
+        setPhone(value);
         break;
       default:
         return;
@@ -27,16 +27,16 @@ const ContactForm = () => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    if (contactList.find(contact => contact.name === name)) {
+    if (contacts.find(contact => contact.name === name)) {
       alert(`${name} is already in contacts.`);
       setName('');
       return;
     }
 
-    dispatch(createContact({ name, number }));
+    dispatch(addContact({ name, phone }));
 
     setName('');
-    setNumber('');
+    setPhone('');
   };
 
   return (
@@ -58,8 +58,8 @@ const ContactForm = () => {
         Number
         <Input
           type="tel"
-          name="number"
-          value={number}
+          name="phone"
+          value={phone}
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
@@ -67,7 +67,7 @@ const ContactForm = () => {
           onChange={handleChange}
         />
       </Label>
-      <Button type="submit" disabled={!name || !number}>
+      <Button type="submit" disabled={!name || !phone}>
         Add contact
       </Button>
     </form>
